@@ -16,10 +16,22 @@ export const entryApi = createApi({
             query: () => "entries",
             providesTags: ["Entries"]
         }),
+
+        deleteEntries: builder.mutation<void, string>({
+            query: (id) => ({
+                url: `entries/${id}`,
+                method: "DELETE"
+            }),
+            invalidatesTags: ["Entries"]
+        })
+
+
+
     })
 });
 
 export const {
     useGetEntriesQuery,
+    useDeleteEntriesMutation,
 } = entryApi;
 

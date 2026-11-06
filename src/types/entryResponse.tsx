@@ -14,3 +14,9 @@ export interface EntryList {
     errors?: string[];
 }
 
+export interface DeleteEntryResponse {
+    success: boolean;
+    value?: boolean;
+    errors?: string[];
+}
+

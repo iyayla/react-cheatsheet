@@ -1,7 +1,10 @@
+import { useState } from "react";
 import Loading from "../../components/Loading";
-import { useGetEntriesQuery } from "../../features/entry/entryApi";
+import { useDeleteEntriesMutation, useGetEntriesQuery } from "../../features/entry/entryApi";
+import DeleteForm from "./DeleteForm";
 
 function Api() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data, isLoading, isError, error, refetch } = useGetEntriesQuery(
     undefined,
     {
@@ -9,10 +12,35 @@ function Api() {
     },
   );
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [deleteContact, { isLoading: isDeleting, data: deleteData }] =
+        useDeleteEntriesMutation();
+
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deletemeEntryId, setDeleteEntryId] = useState<string | null>(null);
+
   const openDeleteModal = (entryId: string) => {
-    // Logic to open delete modal for the entry with the given entryId
-    console.log(`Open delete modal for entry with ID: ${entryId}`);
+    setDeleteDialogOpen(true);
+    setDeleteEntryId(entryId);
   }
+
+  const closeDeleteModal = () => {
+    setDeleteDialogOpen(false);
+    setDeleteEntryId(null);
+  }
+
+  const handleDelete = async (id: string) => {
+
+        try {
+            await deleteContact(id).unwrap();
+            closeDeleteModal();
+            // refetch(); // Optionally refetch the entries after deletion
+
+        } catch (err) {
+            console.error("Delete failed:", err);
+        }
+    };
+
 
   const handleAddNew = () => {
     // Logic to add a new entry
@@ -27,6 +55,20 @@ function Api() {
 
   return (
     <div className="overflow-x-auto">
+      {deleteDialogOpen && (
+        <dialog id="deleteModal" className="modal modal-open">
+          <div className="modal-box">
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={closeDeleteModal}>
+              ✕
+            </button>
+            <DeleteForm
+              initialValues={{ id: deletemeEntryId || "" }}
+              isLoading={isDeleting}
+              onSubmit={(values) => handleDelete(values.id)} />
+          </div>
+        </dialog>
+      )}
+
       <div className="text-right font-bold m-2">
         <button className="btn btn-xl" onClick={handleAddNew}>
           Add New
@@ -42,23 +84,24 @@ function Api() {
           </tr>
         </thead>
         <tbody>
-          {
-            data && data.success && data!.value!.map((entry) => (
-
+          {data &&
+            data.success &&
+            data!.value!.map((entry) => (
               <tr key={entry.id} className="hover:bg-base-300">
                 <th>{entry.firstName}</th>
                 <td>{entry.lastName}</td>
                 <td>{entry.phoneNumber}</td>
                 <td>
                   <button className="btn btn-sm btn-primary">Edit</button>
-                  <button className="btn btn-sm btn-error ml-2" onClick={() => openDeleteModal(entry.id)}>
+                  <button
+                    className="btn btn-sm btn-error ml-2"
+                    onClick={() => openDeleteModal(entry.id)}
+                  >
                     Delete
                   </button>
                 </td>
               </tr>
-            ))
-
-          }
+            ))}
         </tbody>
       </table>
     </div>
