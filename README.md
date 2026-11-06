@@ -1,4 +1,4 @@
-# React Cheet Sheet
+# React Cheat Sheet
 
 ## useEffect
 
