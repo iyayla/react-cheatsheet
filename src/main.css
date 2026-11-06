@@ -1,0 +1,7 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+@theme {
+    --color-dark-blue: oklch(21.613% 0.09471 275.052);
+    --font-arial: Arial, sans-serif;
+}
