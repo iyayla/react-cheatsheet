@@ -3,21 +3,21 @@ import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
-export interface UserFormValues {
+export interface DeleteFormValues {
   id: string;
 }
 
-interface UserFormProps {
-  initialValues: UserFormValues;
+interface DeleteFormProps {
+  initialValues: DeleteFormValues;
   isLoading: boolean;
-  onSubmit: (values: UserFormValues) => void;
+  onSubmit: (values: DeleteFormValues) => void;
 }
 
 const validationSchema = Yup.object({
   id: Yup.string().required("Id is required"),
 });
 
-const DeleteForm: React.FC<UserFormProps> = ({
+const DeleteForm: React.FC<DeleteFormProps> = ({
   initialValues,
   isLoading,
   onSubmit,
