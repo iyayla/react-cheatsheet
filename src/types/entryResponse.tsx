@@ -20,3 +20,15 @@ export interface DeleteEntryResponse {
     errors?: string[];
 }
 
+export interface CreateEntryRequest {
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+}
+
+export interface UpsertEntryResponse {
+    success: boolean;
+    value?: string;
+    errors?: string[];
+}
+

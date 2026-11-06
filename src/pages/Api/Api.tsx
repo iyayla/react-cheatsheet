@@ -1,8 +1,9 @@
 import { useState } from "react";
 import Loading from "../../components/Loading";
-import { useDeleteEntriesMutation, useGetEntriesQuery } from "../../features/entry/entryApi";
+import { useAddEntryMutation, useDeleteEntriesMutation, useGetEntriesQuery } from "../../features/entry/entryApi";
 import DeleteForm from "./DeleteForm";
-import type { DeleteEntryResponse } from "../../types/entryResponse";
+import type { CreateEntryRequest, DeleteEntryResponse, UpsertEntryResponse } from "../../types/entryResponse";
+import AddForm from "./AddForm";
 
 function Api() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -13,10 +14,9 @@ function Api() {
     },
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   const [deleteContact, { isLoading: isDeleting }] =
         useDeleteEntriesMutation();
-
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletemeEntryId, setDeleteEntryId] = useState<string | null>(null);
   const [deleteData, setDeleteData] = useState<DeleteEntryResponse | null>(null);
@@ -49,10 +49,33 @@ function Api() {
     };
 
 
-  const handleAddNew = () => {
-    // Logic to add a new entry
-    console.log("Add New button clicked");
-  };
+
+  const [addEntry, { isLoading: isAdding }] =
+        useAddEntryMutation();
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [addData, setAddData] = useState<UpsertEntryResponse | null>(null);
+
+  const openAddModal = () => {
+    setAddDialogOpen(true);
+  }
+
+  const closeAddModal = () => {
+    setAddDialogOpen(false);
+    setAddData(null);
+  }
+
+  const handleAdd = async (addDataRequest: CreateEntryRequest) => {
+
+        try {
+            const result = await addEntry(addDataRequest).unwrap();
+            setAddData(result);
+            if(result.success) {
+              closeAddModal();
+            }
+        } catch (err) {
+            console.error("Add failed:", err);
+        }
+    };
 
   if (isLoading) return <Loading />;
 
@@ -77,9 +100,28 @@ function Api() {
           </div>
         </dialog>
       )}
+      
+      
+      {addDialogOpen && (
+        <dialog id="deleteModal" className="modal modal-open">
+          <div className="modal-box">
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={closeAddModal}>
+              ✕
+            </button>
+            <AddForm
+              isLoading={isAdding}
+              onSubmit={(values) => handleAdd(values)} 
+              addData={addData}
+              />
+          </div>
+        </dialog>
+      )}
+
+
+
 
       <div className="text-right font-bold m-2">
-        <button className="btn btn-xl" onClick={handleAddNew}>
+        <button className="btn btn-xl" onClick={openAddModal}>
           Add New
         </button>
       </div>
