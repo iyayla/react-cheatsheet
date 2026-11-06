@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { EntryList } from "../../types/entryResponse";
+import type { DeleteEntryResponse, EntryList } from "../../types/entryResponse";
 
 export const entryApi = createApi({
     reducerPath: "entryApi",
@@ -17,7 +17,7 @@ export const entryApi = createApi({
             providesTags: ["Entries"]
         }),
 
-        deleteEntries: builder.mutation<void, string>({
+        deleteEntries: builder.mutation<DeleteEntryResponse, string>({
             query: (id) => ({
                 url: `entries/${id}`,
                 method: "DELETE"
