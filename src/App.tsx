@@ -7,6 +7,7 @@ import Enviroment from "./pages/Enviroment";
 import Redux from "./pages/Redux/Redux";
 import Header from "./components/Header";
 import Loading from "./components/Loading";
+import Api from "./pages/Api/Api";
 
 const TailWind = lazy(() => import("./pages/TailWind"));
 
@@ -23,6 +24,7 @@ function App() {
           <Route path="/tailwind" element={<TailWind />} />
           <Route path="/enviroment" element={<Enviroment />} />
           <Route path="/redux" element={<Redux />} />
+          <Route path="/api" element={<Api />} />
         </Routes>
       </Suspense>
     </>

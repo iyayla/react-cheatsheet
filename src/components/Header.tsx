@@ -45,6 +45,9 @@ function Header() {
             <li>
               <Link to="/tailwind">TailWind Css</Link>
             </li>
+            <li>
+              <Link to="/api">API CRUD</Link>
+            </li>
           </ul>
         </div>
       </div>
