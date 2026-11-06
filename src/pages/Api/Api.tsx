@@ -2,6 +2,7 @@ import { useState } from "react";
 import Loading from "../../components/Loading";
 import { useDeleteEntriesMutation, useGetEntriesQuery } from "../../features/entry/entryApi";
 import DeleteForm from "./DeleteForm";
+import type { DeleteEntryResponse } from "../../types/entryResponse";
 
 function Api() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -13,11 +14,12 @@ function Api() {
   );
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [deleteContact, { isLoading: isDeleting, data: deleteData }] =
+  const [deleteContact, { isLoading: isDeleting }] =
         useDeleteEntriesMutation();
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deletemeEntryId, setDeleteEntryId] = useState<string | null>(null);
+  const [deleteData, setDeleteData] = useState<DeleteEntryResponse | null>(null);
 
   const openDeleteModal = (entryId: string) => {
     setDeleteDialogOpen(true);
@@ -27,13 +29,18 @@ function Api() {
   const closeDeleteModal = () => {
     setDeleteDialogOpen(false);
     setDeleteEntryId(null);
+    setDeleteData(null);
   }
 
   const handleDelete = async (id: string) => {
 
         try {
-            await deleteContact(id).unwrap();
-            closeDeleteModal();
+            const result = await deleteContact(id).unwrap();
+            setDeleteData(result);
+            if(result.success) {
+              closeDeleteModal();
+            }
+
             // refetch(); // Optionally refetch the entries after deletion
 
         } catch (err) {
@@ -64,7 +71,9 @@ function Api() {
             <DeleteForm
               initialValues={{ id: deletemeEntryId || "" }}
               isLoading={isDeleting}
-              onSubmit={(values) => handleDelete(values.id)} />
+              onSubmit={(values) => handleDelete(values.id)} 
+              deleteData={deleteData}
+              />
           </div>
         </dialog>
       )}
