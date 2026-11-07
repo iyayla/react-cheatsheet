@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import type { CreateEntryRequest, DeleteEntryResponse, EntryList, UpsertEntryResponse } from "../../types/entryResponse";
+import type { CreateEntryRequest, DeleteEntryResponse, EntryList, UpdateEntryRequest, UpsertEntryResponse } from "../../types/entryResponse";
 
 export const entryApi = createApi({
     reducerPath: "entryApi",
@@ -33,7 +33,15 @@ export const entryApi = createApi({
             }),
             invalidatesTags: ["Entries"]
         }),
-
+        
+        updateEntry: builder.mutation<UpsertEntryResponse, UpdateEntryRequest>({
+            query: (updateEntry) => ({
+                url: "entries",
+                method: "PUT",
+                body: updateEntry
+            }),
+            invalidatesTags: ["Entries"]
+        }),
 
 
     })
@@ -43,5 +51,6 @@ export const {
     useGetEntriesQuery,
     useDeleteEntriesMutation,
     useAddEntryMutation,
+    useUpdateEntryMutation,
 } = entryApi;
 

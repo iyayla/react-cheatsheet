@@ -1,9 +1,10 @@
 import { useState } from "react";
 import Loading from "../../components/Loading";
-import { useAddEntryMutation, useDeleteEntriesMutation, useGetEntriesQuery } from "../../features/entry/entryApi";
+import { useAddEntryMutation, useDeleteEntriesMutation, useGetEntriesQuery, useUpdateEntryMutation } from "../../features/entry/entryApi";
 import DeleteForm from "./DeleteForm";
-import type { CreateEntryRequest, DeleteEntryResponse, UpsertEntryResponse } from "../../types/entryResponse";
+import type { CreateEntryRequest, DeleteEntryResponse, Entry, UpdateEntryRequest, UpsertEntryResponse } from "../../types/entryResponse";
 import AddForm from "./AddForm";
+import UpdateForm from "./UpdateForm";
 
 function Api() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -77,6 +78,51 @@ function Api() {
         }
     };
 
+
+
+  const [updateEntry, { isLoading: isUpdating }] =
+        useUpdateEntryMutation();
+  const [updateDialogOpen, setUpdateDialogOpen] = useState(false);
+  const [deleteInitialValues, setDeleteInitialValues] = useState<UpdateEntryRequest | null>(null);
+  const [updateData, setUpdateData] = useState<UpsertEntryResponse | null>(null);
+
+  const openUpdateModal = (entry: Entry) => {
+    setUpdateDialogOpen(true);
+
+    const initValues : UpdateEntryRequest = {
+      id: entry.id,
+      firstName: entry.firstName,
+      lastName: entry.lastName,
+      phoneNumber: entry.phoneNumber
+    };
+
+    setDeleteInitialValues(initValues);
+
+  }
+
+  const closeUpdateModal = () => {
+    setUpdateDialogOpen(false);
+    setUpdateData(null);
+    setDeleteInitialValues(null);
+  }
+
+  const handleUpdate = async (updateDataRequest: UpdateEntryRequest) => {
+
+        try {
+            const result = await updateEntry(updateDataRequest).unwrap();
+            setAddData(result);
+            if(result.success) {
+              closeUpdateModal();
+            }
+        } catch (err) {
+            console.error("Update failed:", err);
+        }
+    };
+
+
+
+
+
   if (isLoading) return <Loading />;
 
   if (isError) {
@@ -103,7 +149,7 @@ function Api() {
       
       
       {addDialogOpen && (
-        <dialog id="deleteModal" className="modal modal-open">
+        <dialog id="addModal" className="modal modal-open">
           <div className="modal-box">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={closeAddModal}>
               ✕
@@ -117,7 +163,21 @@ function Api() {
         </dialog>
       )}
 
-
+      {updateDialogOpen && (
+        <dialog id="updateModal" className="modal modal-open">
+          <div className="modal-box">
+            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={closeUpdateModal}>
+              ✕
+            </button>
+            <UpdateForm
+              initialValues={deleteInitialValues!}
+              isLoading={isUpdating}
+              onSubmit={(values) => handleUpdate(values)} 
+              updateData={updateData}
+              />
+          </div>
+        </dialog>
+      )}
 
 
       <div className="text-right font-bold m-2">
@@ -143,7 +203,12 @@ function Api() {
                 <td>{entry.lastName}</td>
                 <td>{entry.phoneNumber}</td>
                 <td>
-                  <button className="btn btn-sm btn-primary">Edit</button>
+                  <button
+                    className="btn btn-sm btn-primary"
+                    onClick={() => openUpdateModal(entry)}
+                  >
+                    Edit
+                  </button>
                   <button
                     className="btn btn-sm btn-error ml-2"
                     onClick={() => openDeleteModal(entry.id)}

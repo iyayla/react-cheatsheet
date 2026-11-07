@@ -26,6 +26,10 @@ export interface CreateEntryRequest {
     phoneNumber: string;
 }
 
+export interface UpdateEntryRequest extends CreateEntryRequest {
+    id: string;
+}
+
 export interface UpsertEntryResponse {
     success: boolean;
     value?: string;
